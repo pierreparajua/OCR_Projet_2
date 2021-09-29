@@ -18,15 +18,22 @@ def get_info_1_book(url_book):  # récupère les 10 informations demandées pour
         number_available = ''.join(number_available)
         product_description = soup.find_all("p")[3].text
         category = soup.find_all("a")[3].text
-
-        # review_rating_p = soup.find("p", {'class': 'star-rating Two'})
-        # review_x = review_rating_p.find_all("i", {"class": "icon-star"})
-
+        rating = soup.find_all("div", class_="col-sm-6 product_main")
+        if "One" in str(rating):
+            review_rating = "1"
+        elif "Two" in str(rating):
+            review_rating = "2"
+        elif "Three" in str(rating):
+            review_rating = "3"
+        elif "Four" in str(rating):
+            review_rating = "4"
+        else:
+            review_rating = "5"
         image_url_div = soup.find("div", {'class': "item active"})
         image_url = "http://books.toscrape.com/" + image_url_div.find("img")["src"][6:]
 
         datas = [url_book, universal_product_code, title, price_including_tax, price_excluding_tax, number_available,
-                 product_description, category, 2, image_url]
+                 product_description, category, review_rating, image_url]
     return datas
 
 

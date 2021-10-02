@@ -1,15 +1,14 @@
-import time
 import requests
 from bs4 import BeautifulSoup
 from pathlib import Path
 from slugify import slugify
 
-start = time.time()
 
 SOURCE_DIR = Path(__file__).resolve().parent
 DATA_DIR = SOURCE_DIR / "data"
 CSV_DIR = SOURCE_DIR / "data" / "csv"
 IMAGE_DIR = SOURCE_DIR / "data" / "image"
+
 list_name_books = []
 list_url_image = []
 
@@ -19,7 +18,7 @@ def create_categories_url():  # retourne une liste avec les urls de toutes les c
     soup = BeautifulSoup(page.content, features="html.parser")
     liste_categories_url = []
 
-    list_category = [i['href'] for i in soup.find_all("a")][3:6]
+    list_category = [i['href'] for i in soup.find_all("a")][3:53]
     for url in list_category:
         full_url = "http://books.toscrape.com/" + url
 
@@ -109,7 +108,7 @@ list_name_category = get_name_category()  # Liste des noms des catégories
 x = 0
 fin = 1000
 for url_cat in liste_url_categories:  # boucle dans la liste de catégorie
-    with open(f"data/csv/{list_name_category[x]}.csv", 'a',
+    with open(f"data/csv/{list_name_category[x]}.csv", 'w',
               encoding="utf-8") as f:  # crée un fichier csv par catégorie
         print(f"category: {list_name_category[x]}")
         x += 1
@@ -138,5 +137,4 @@ for image in list_url_image:  # boucle sur cette liste
         print(f"image N: {x + 1}")
     x += 1
 
-elapsed = (time.time()) - start
-print(f'Temps d\'exécution : {elapsed}s')
+

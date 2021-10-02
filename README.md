@@ -21,9 +21,9 @@
    Le programme crée également un dossier contenant l' ensemble des images des livres du site
    
    ##Pré-requis:
-    #Languege de programmation:
+    -Languege de programmation:
       Python3
-    #Module utilisés:
+    -Module utilisés:
       Request
       BeautifulSoup
       Pathlib

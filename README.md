@@ -28,7 +28,7 @@
       - BeautifulSoup
       - Pathlib
       - Slugify
-    - Un fichier **requirements.txt** est disponible sur le depository
+   - Un fichier **requirements.txt** est disponible sur le depository
      
    ## Utilisation:
    - Copier le fichier python "codesource" dans le répertoire souhaité

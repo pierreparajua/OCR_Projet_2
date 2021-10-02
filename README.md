@@ -40,7 +40,7 @@
    - Ce programme constitue une version bêta qui devra servir à récolter ces informations sur d' autres sites.
     
    ## Auteurs:
-   Parajua pierre
+   Parajua Pierre
    
     
     

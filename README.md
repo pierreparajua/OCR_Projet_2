@@ -30,7 +30,7 @@
       Slugify
      Un fichier **requirements.txt** est disponible sur le depository
      
-    ##Utilisation:
+   ##Utilisation:
       -Copier le fichier python "codesource" dans le repertoire souhaité
       -Executer le programme
       -Le programme crée un dossier "data" dans le repertoire courant, qui contient un dossier "csv" et dossier "image"

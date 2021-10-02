@@ -24,10 +24,10 @@
    - Language de programmation:
       Python3
    - Module utilisés:
-      Request
-      BeautifulSoup
-      Pathlib
-      Slugify
+      - Request
+      - BeautifulSoup
+      - Pathlib
+      - Slugify
     - Un fichier **requirements.txt** est disponible sur le depository
      
    ## Utilisation:

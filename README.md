@@ -21,9 +21,9 @@
    Le programme crée également un dossier contenant l' ensemble des images des livres du site
    
    ## Pré-requis:
-    - Language de programmation:
+   - Language de programmation:
       Python3
-    -Module utilisés:
+   - Module utilisés:
       Request
       BeautifulSoup
       Pathlib
@@ -31,16 +31,16 @@
      Un fichier **requirements.txt** est disponible sur le depository
      
    ## Utilisation:
-      -Copier le fichier python "codesource" dans le répertoire souhaité
-      -Exécuter le programme
-      -Le programme crée un dossier "data" dans le repertoire courant, qui contient un dossier "csv" et dossier "image"
-      -Les différentes données sont classées dans ces dossiers
+   - Copier le fichier python "codesource" dans le répertoire souhaité
+   - Exécuter le programme
+   - Le programme crée un dossier "data" dans le repertoire courant, qui contient un dossier "csv" et dossier "image"
+   - Les différentes données sont classées dans ces dossiers
   
    ## Version:
-    -Ce programme constitue une version bêta qui devra servir à récolter ces informations sur d' autres sites.
+   - Ce programme constitue une version bêta qui devra servir à récolter ces informations sur d' autres sites.
     
    ## Auteurs:
-    Parajua pierre
+   Parajua pierre
    
     
     

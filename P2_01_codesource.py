@@ -3,6 +3,7 @@ import requests
 from bs4 import BeautifulSoup
 from pathlib import Path
 from slugify import slugify
+import re
 
 # Création des chemins des dossiers "data" "csv" et "image"
 SOURCE_DIR = Path(__file__).resolve().parent
@@ -15,7 +16,7 @@ def create_categories_url():  # retourne une liste avec les urls de toutes les c
     page = requests.get("https://books.toscrape.com")
     soup = BeautifulSoup(page.content, features="html.parser")
     liste_categories_url = []
-    list_category = [i['href'] for i in soup.find_all("a")][3:4]
+    list_category = [i['href'] for i in soup.find_all("a")][3:5]
     for url in list_category:
         full_url = "http://books.toscrape.com/" + url
         liste_categories_url.append(full_url)
@@ -60,6 +61,7 @@ def get_info_1_book(url_book):  # récupère les 10 informations demandées pour
         soup = BeautifulSoup(page.content, features="html.parser")
         universal_product_code = soup.find("td").text
         title = soup.find("h1").text
+        title = re.sub("[(].*?[)]", "", title)  # Supprime le test entre parenthèse dans les titres
         price_including_tax = soup.find_all("td")[3].text.strip("Â£")
         price_excluding_tax = soup.find_all("td")[2].text.strip("Â£")
         number_available = [stock for stock in soup.find_all("td")[5].text if stock.isdigit()]

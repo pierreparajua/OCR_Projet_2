@@ -1,27 +1,23 @@
+import csv
 import requests
 from bs4 import BeautifulSoup
 from pathlib import Path
 from slugify import slugify
 
-
+# Création des chemins des dossiers "data" "csv" et "image"
 SOURCE_DIR = Path(__file__).resolve().parent
 DATA_DIR = SOURCE_DIR / "data"
 CSV_DIR = SOURCE_DIR / "data" / "csv"
 IMAGE_DIR = SOURCE_DIR / "data" / "image"
-
-list_name_books = []
-list_url_image = []
 
 
 def create_categories_url():  # retourne une liste avec les urls de toutes les catégories de livres (50)
     page = requests.get("https://books.toscrape.com")
     soup = BeautifulSoup(page.content, features="html.parser")
     liste_categories_url = []
-
-    list_category = [i['href'] for i in soup.find_all("a")][3:53]
+    list_category = [i['href'] for i in soup.find_all("a")][3:4]
     for url in list_category:
         full_url = "http://books.toscrape.com/" + url
-
         liste_categories_url.append(full_url)
     return liste_categories_url
 
@@ -55,12 +51,10 @@ def get_books_url(url_category):  # retourne une liste avec l' ensemble des urls
                 a = article.find('a')
                 link = a['href'][8:]
                 links.append("http://books.toscrape.com/catalogue" + link)
-
     return links
 
 
 def get_info_1_book(url_book):  # récupère les 10 informations demandées pour 1 livres et retourne une liste
-    datas = []
     page = requests.get(url_book)
     if page.ok:
         soup = BeautifulSoup(page.content, features="html.parser")
@@ -86,13 +80,14 @@ def get_info_1_book(url_book):  # récupère les 10 informations demandées pour
         image_url_div = soup.find("div", {'class': "item active"})
         image_url = "http://books.toscrape.com/" + image_url_div.find("img")["src"][6:]  # recompose l' url des images
 
-        datas = [url_book, universal_product_code, title, price_including_tax, price_excluding_tax, number_available,
-                 product_description, category, review_rating, image_url]  # liste avec les 10 éléments demandés pour
-        # un livres
+        # Crée un dictionnaire pour chaque livre avec les informations demandées
+        values = [url_book, universal_product_code, title, price_including_tax, price_excluding_tax, number_available,
+                  product_description, category, review_rating, image_url]
+        keys = ["product_page_url", "universal_ product_code", "title", "price_including_tax", "price_excluding_tax",
+                "number_available", "product_description", "category", "review_rating", "image_url"]
+        dict_book = dict(zip(keys, values))
 
-        list_name_books.append(title)  # récupère le nom des livres dans une liste pour nommer les fichiers images
-        list_url_image.append(image_url)  # récupère les urls des images dans une liste
-    return datas
+    return dict_book
 
 
 if DATA_DIR.exists():  # Vérifie l' existence du dossier data
@@ -104,37 +99,21 @@ else:  # Si le dossier n' existe pas, crée le dossier "data" et les sous dossie
 liste_url_categories = create_categories_url()  # Liste des urls des différentes catégories
 list_name_category = get_name_category()  # Liste des noms des catégories
 
-# Enregistrement des fichiers CSV
-x = 0
-fin = 1000
-for url_cat in liste_url_categories:  # boucle dans la liste de catégorie
-    with open(f"data/csv/{list_name_category[x]}.csv", 'w',
-              encoding="utf-8") as f:  # crée un fichier csv par catégorie
-        print(f"category: {list_name_category[x]}")
-        x += 1
-        # Crée les noms de colonne dans le fichier.
-        f.write("product_page_url, universal_ product_code, title, price_including_tax, price_excluding_tax,"
-                "number_available, product_description, category, review_rating, image_url\n")
-        y = 1
-        for book in get_books_url(url_cat):  # Boucle sur tous les livres dans chaque catégorie
-            print(f"livre {y}")
-            print(f"il reste encore {fin} livres ....")
-            y += 1
-            fin -= 1
-            for item in get_info_1_book(book):  # Pour chaque livre extrait et sauve les données sur le fichier .cvs
-                f.write(str(item))
-                f.write(",")
-            f.write("\n")
-
-# Enregistrement des fichiers images
-x = 0
-
-for image in list_url_image:  # boucle sur cette liste
-    image_content = requests.get(image).content  # execute un requête pour chaque url de livre
-    slug_name = slugify(list_name_books[x])
-    with open(f"data/image/{slug_name}.jpg", "wb") as f:  # sauvegarde l' image dans data/image
-        f.write(image_content)
-        print(f"image N: {x + 1}")
-    x += 1
-
-
+for url_cat, name_cat in zip(liste_url_categories, list_name_category):  # Itère sur les listes des urls et des noms de
+    # catégories
+    with open(f"data/csv/{name_cat}.csv", 'w', newline='', encoding="utf-8") as f:  # crée un fichiers csv par catégorie
+        headers = ["product_page_url", "universal_ product_code", "title", "price_including_tax", "price_excluding_tax",
+                   "number_available", "product_description", "category", "review_rating", "image_url"]
+        writer = csv.DictWriter(f, fieldnames=headers)
+        writer.writeheader()
+        print(name_cat)
+        for book_url in get_books_url(url_cat):  # Pour chaque livre de cette catégorie, écrie dans une ligne les
+            # informations demandées, à partir du dictionnaire crée dans la fonction "get_info_1_book"
+            dict_1_book = get_info_1_book(book_url)
+            writer.writerow(dict_1_book)
+            # Pour chaque livre, récupère et  enregistre l' image du livre dans le dossier "image"
+            image_content = requests.get(dict_1_book["image_url"]).content
+            slug_name = slugify(dict_1_book["title"])
+            with open(f"data/image/{slug_name}.jpg", "wb") as file:  # sauvegarde l' image dans data/image
+                file.write(image_content)
+            print(slug_name)

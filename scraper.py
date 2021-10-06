@@ -6,39 +6,63 @@ from bs4 import BeautifulSoup
 import requests
 from slugify import slugify
 
-# Création des chemins des dossiers "data" "csv" et "image"
 SOURCE_DIR = Path(__file__).resolve().parent
 DATA_DIR = SOURCE_DIR / "data"
 CSV_DIR = SOURCE_DIR / "data" / "csv"
 IMAGE_DIR = SOURCE_DIR / "data" / "image"
 
-PRODUCTS = ["product_page_url", "universal_ product_code", "title", "price_including_tax","price_excluding_tax"
-            , "number_available", "product_description", "category", "review_rating", "image_url", "image_name"]
+PRODUCTS = ["product_page_url", "universal_ product_code", "title", "price_including_tax", "price_excluding_tax",
+            "number_available", "product_description", "category", "review_rating", "image_url", "image_name"]
 
 
 def do_request(url):
+    """
+Fonction qui execute un requête sur l' url passer en argument, et utilise BeautifulSoup.
+    Args:
+        url (str): url pour l requête
+    Returns:
+        class 'bs4.BeautifulSoup': objet "soup" avec le contenu de la page html
+    """
     page = requests.get(url)
     soup = BeautifulSoup(page.content, features="html.parser")
     return soup
 
 
 def get_category_urls():
+    """
+Fonction qui récupère l' ensemble des urls de chaque catégorie
+    Returns:
+        liste: liste des catégories
+    """
     soup = do_request("https://books.toscrape.com")
-    liste_categories_url = []
+    categories_url = []
     list_category = [i['href'] for i in soup.find_all("a")][3:5]
     for url in list_category:
         full_url = "http://books.toscrape.com/" + url
-        liste_categories_url.append(full_url)
-    return liste_categories_url
+        categories_url.append(full_url)
+    return categories_url
 
 
 def get_name_categories():
+    """
+Fonction qui extrait les noms des catégories à partir des urls récupérés dans la fonction "get_category_urls"
+    Returns:
+        list: des noms de catégorie
+    """
     liste_name = [i.replace("http://books.toscrape.com/catalogue/category/books/", "")
                   [:-13].strip("_") for i in get_category_urls()]
     return liste_name
 
 
 def get_book_urls(url_category):
+    """
+Fonction qui extrait les urls de chaque livre par catégorie
+    Args:
+        url_category (str): url de la catégorie souhaitée
+    Returns:
+        list: des urls de chaque livres
+
+    """
     links = []
     soup = do_request(url_category)
     # teste le nombre de pages
@@ -63,6 +87,13 @@ def get_book_urls(url_category):
 
 
 def get_info_1_book(url_book):
+    """
+Fonction qui extrait les informations demandées (PRODUCTS) pour un livre et retourne un dictionnaire
+    Args:
+        url_book (str): url du livre
+    Returns:
+        dict: contenant les PRODUCTS en "keys" et les informations en "values"
+    """
     soup = do_request(url_book)
     universal_product_code = soup.find("td").text
     title = soup.find("h1").text
@@ -89,8 +120,8 @@ def get_info_1_book(url_book):
     image_name = image_url_div.find("img")["src"][24:]
 
     # Crée un dictionnaire pour chaque livre avec les informations demandées
-    values = [url_book, universal_product_code, title, price_including_tax, price_excluding_tax, number_available,
-              product_description, category, review_rating, image_url, image_name]
+    values = [url_book, universal_product_code, title, price_including_tax, price_excluding_tax,
+              number_available, product_description, category, review_rating, image_url, image_name]
     keys = PRODUCTS
     dict_book = dict(zip(keys, values))
 
@@ -98,7 +129,12 @@ def get_info_1_book(url_book):
 
 
 def main():
-    # crée les dossiers "csv" et "image" dans "data",si nécessaire
+    """
+Fonction principale:
+    - Crée le dossier "csv" et "image"
+    - Sauvegarde les informations dans un fichier csv par catégorie
+    - Sauvegarde les images des livres, classés par catégorie
+    """
     CSV_DIR.mkdir(parents=True, exist_ok=True)
     IMAGE_DIR.mkdir(parents=True, exist_ok=True)
 

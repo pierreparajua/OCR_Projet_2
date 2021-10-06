@@ -17,8 +17,9 @@
     - le catégorie du livre
     - la note du livre
     - l' URL de l 'image
+    - nom de l 'image
    Ces données sont stockées sur un fichier .csv par catégorie avec les données en titre de colonne et chaque ligne correspondant à un livre.
-   Le programme crée également un dossier contenant l' ensemble des images des livres du site
+   Le programme crée également un dossier contenant l' ensemble des images des livres du site.
    
    ## Pré-requis:
    - Language de programmation:
@@ -28,13 +29,22 @@
       - BeautifulSoup
       - Pathlib
       - Slugify
-   - Un fichier **requirements.txt** est disponible sur le depository
+      - Re
+      - csv
+   - Un fichier **requirements.txt** est disponible sur le depository.
      
+   ## Installation:
+   - Créer un dossier où vous souhaitez, par exemple " projet".
+   - Copier le fichier python "scraper.py" et requirements.txt dans le dossier.
+   - Ouvrir une console et se placer dans le dossier.
+   - Créer un environnement virtuel grâce à la commande " py -m venv env".
+   - Activer l' enviromment virtuel avec la commande :  "source env/bin/activate".
+   - Installer les packages necessaires avec la commande : " pip install -r requirements.txt"  
+   - 
    ## Utilisation:
-   - Copier le fichier python "codesource" dans le répertoire souhaité
-   - Exécuter le programme
-   - Le programme crée un dossier "data" dans le repertoire courant, qui contient un dossier "csv" et dossier "image"
-   - Les différentes données sont classées dans ces dossiers
+   - Exécuter le programme.
+   - Le programme crée un dossier "data" dans le repertoire courant, qui contient un dossier "csv" et dossier "image".
+   - Les différentes données sont classées dans ces dossiers par catégorie.
   
    ## Version:
    - Ce programme constitue une version bêta qui devra servir à récolter ces informations sur d' autres sites.

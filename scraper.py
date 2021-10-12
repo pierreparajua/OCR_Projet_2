@@ -6,7 +6,6 @@ from bs4 import BeautifulSoup
 import requests
 from slugify import slugify
 
-
 SOURCE_DIR = Path(__file__).resolve().parent
 DATA_DIR = SOURCE_DIR / "data"
 CSV_DIR = SOURCE_DIR / "data" / "csv"
@@ -26,8 +25,11 @@ Fonction qui execute un requête sur l' url passer en argument, et utilise Beaut
         class 'bs4.BeautifulSoup': objet "soup" avec le contenu de la page html
     """
     page = requests.get(url)
-    soup = BeautifulSoup(page.content, features="html.parser")
-    return soup
+    if page.ok:
+        soup = BeautifulSoup(page.content, features="html.parser")
+        return soup
+    else:
+        print("Page html non trouvée")
 
 
 def get_category_urls(nbr_cat):
@@ -83,8 +85,7 @@ Fonction qui extrait les urls de chaque livre par catégorie
         nbr_of_pages = soup.find("li", class_="current").text[40:41]  # s' il y a plusieurs pages
         url_category = url_category.replace("index", "page")
         for i in range(1, int(nbr_of_pages) + 1):
-            page = requests.get(url_category[:-5] + "-" + str(i) + ".html")
-            soup = BeautifulSoup(page.text, features="html.parser")
+            soup = do_request(url_category[:-5] + "-" + str(i) + ".html")
             articles = soup.findAll("article")
             for article in articles:
                 a = article.find('a')
@@ -136,7 +137,7 @@ Fonction qui extrait les informations demandées (PRODUCTS) pour un livre et ret
     return dict_book
 
 
-def main(nbr_cat):
+def main(nbr_cat=50):
     """
 Fonction principale:
     - Crée le dossier "csv" et "image"
@@ -153,11 +154,11 @@ Fonction principale:
 
     for url_cat, name_cat in zip(get_category_urls(nbr_cat), get_name_categories(nbr_cat)):
         (IMAGE_DIR / name_cat).mkdir(parents=True, exist_ok=True)
-        with open(f"data/csv/{name_cat}.csv", 'w', newline='', encoding="utf-8") as f:
+        with open(f"data/csv/{name_cat}.csv", 'w', newline='', encoding="utf-8-sig") as f:
             headers = PRODUCTS
             writer = csv.DictWriter(f, fieldnames=headers)
             writer.writeheader()
-            print(name_cat)
+            print(f"Écriture en cours de la catégories: {name_cat}")
             liste_dict = []
             for book_url in get_book_urls(url_cat):
                 dict_1_book = get_info_1_book(book_url)
@@ -167,10 +168,10 @@ Fonction principale:
                 slug_name = slugify(dict_1_book["title"])
                 with open(f"data/image/{name_cat}/{slug_name}.jpg", "wb") as file:
                     file.write(image_content)
-                print(slug_name)
             writer.writerows(liste_dict)
 
 
 if __name__ == "__main__":
     # Passer en argument le nombre de catégories souhaitées ( 50 max)
-    main(2)
+    main()
+    print("fin du programme")

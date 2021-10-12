@@ -110,7 +110,7 @@ Fonction qui extrait les informations demandées (PRODUCTS) pour un livre et ret
     number_available = [stock for stock in soup.find_all("td")[5].text if stock.isdigit()]
     number_available = ''.join(number_available)
     product_description = soup.find_all("p")[3].text
-    category = soup.find_all("a")[3].text
+    category = soup.find_all("a")[3].text.lower()
     rating = soup.find_all("div", class_="col-sm-6 product_main")  # teste et retourne le nombre d 'étoile
     if "One" in str(rating):
         review_rating = "1"
@@ -124,7 +124,8 @@ Fonction qui extrait les informations demandées (PRODUCTS) pour un livre et ret
         review_rating = "5"
     image_url_div = soup.find("div", {'class': "item active"})
     image_url = "http://books.toscrape.com/" + image_url_div.find("img")["src"][6:]
-    image_name = image_url_div.find("img")["src"][24:]
+
+    image_name = f"data/image/{category}/{slugify(title)}.jpg"
 
     # Crée un dictionnaire pour chaque livre avec les informations demandées
     values = [url_book, universal_product_code, title, price_including_tax, price_excluding_tax,

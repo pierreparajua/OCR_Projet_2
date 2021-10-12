@@ -6,20 +6,22 @@ from bs4 import BeautifulSoup
 import requests
 from slugify import slugify
 
+
 SOURCE_DIR = Path(__file__).resolve().parent
 DATA_DIR = SOURCE_DIR / "data"
 CSV_DIR = SOURCE_DIR / "data" / "csv"
 IMAGE_DIR = SOURCE_DIR / "data" / "image"
 
-PRODUCTS = ["product_page_url", "universal_ product_code", "title", "price_including_tax", "price_excluding_tax",
-            "number_available", "product_description", "category", "review_rating", "image_url", "image_name"]
+PRODUCTS = ["product_page_url", "universal_ product_code", "title", "price_including_tax",
+            "price_excluding_tax", "number_available", "product_description", "category",
+            "review_rating", "image_url", "image_name"]
 
 
 def do_request(url):
     """
 Fonction qui execute un requête sur l' url passer en argument, et utilise BeautifulSoup.
     Args:
-        url (str): url pour l requête
+        url (str): url de la  requête
     Returns:
         class 'bs4.BeautifulSoup': objet "soup" avec le contenu de la page html
     """
@@ -28,29 +30,34 @@ Fonction qui execute un requête sur l' url passer en argument, et utilise Beaut
     return soup
 
 
-def get_category_urls():
+def get_category_urls(nbr_cat):
     """
 Fonction qui récupère l' ensemble des urls de chaque catégorie
+    Args:
+        nbr_cat (int): nombre de catégories
     Returns:
-        liste: liste des catégories
+        list: liste des catégories
     """
     soup = do_request("https://books.toscrape.com")
     categories_url = []
-    list_category = [i['href'] for i in soup.find_all("a")][3:5]
+    list_category = [i['href'] for i in soup.find_all("a")][3:(nbr_cat + 3)]
     for url in list_category:
         full_url = "http://books.toscrape.com/" + url
         categories_url.append(full_url)
     return categories_url
 
 
-def get_name_categories():
+def get_name_categories(nbr_cat):
     """
 Fonction qui extrait les noms des catégories à partir des urls récupérés dans la fonction "get_category_urls"
+
+    Args:
+        nbr_cat (int): nombre de catégories
     Returns:
-        list: des noms de catégorie
+        list: contenant les  noms des catégories
     """
     liste_name = [i.replace("http://books.toscrape.com/catalogue/category/books/", "")
-                  [:-13].strip("_") for i in get_category_urls()]
+                  [:-13].strip("_") for i in get_category_urls(nbr_cat)]
     return liste_name
 
 
@@ -128,24 +135,29 @@ Fonction qui extrait les informations demandées (PRODUCTS) pour un livre et ret
     return dict_book
 
 
-def main():
+def main(nbr_cat):
     """
 Fonction principale:
     - Crée le dossier "csv" et "image"
     - Sauvegarde les informations dans un fichier csv par catégorie
     - Sauvegarde les images des livres, classés par catégorie
+    Args:
+        nbr_cat (int): Nombre de catégories que l 'on souhaite scraper
     """
+    if nbr_cat > 50:
+        print("Le nombre en argument ne doit pas être supérieur à 50")
+        exit()
     CSV_DIR.mkdir(parents=True, exist_ok=True)
     IMAGE_DIR.mkdir(parents=True, exist_ok=True)
 
-    for url_cat, name_cat in zip(get_category_urls(), get_name_categories()):
+    for url_cat, name_cat in zip(get_category_urls(nbr_cat), get_name_categories(nbr_cat)):
+        (IMAGE_DIR / name_cat).mkdir(parents=True, exist_ok=True)
         with open(f"data/csv/{name_cat}.csv", 'w', newline='', encoding="utf-8") as f:
             headers = PRODUCTS
             writer = csv.DictWriter(f, fieldnames=headers)
             writer.writeheader()
             print(name_cat)
             liste_dict = []
-            (IMAGE_DIR / name_cat).mkdir(parents=True, exist_ok=True)
             for book_url in get_book_urls(url_cat):
                 dict_1_book = get_info_1_book(book_url)
                 liste_dict.append(dict_1_book)
@@ -159,4 +171,5 @@ Fonction principale:
 
 
 if __name__ == "__main__":
-    main()
+    # Passer en argument le nombre de catégories souhaitées ( 50 max)
+    main(2)

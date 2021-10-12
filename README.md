@@ -38,11 +38,11 @@
    - Copier le fichier python "scraper.py" et requirements.txt dans le dossier.
    - Ouvrir une console et se placer dans le dossier.
    - Créer un environnement virtuel grâce à la commande " py -m venv env".
-   - Activer l' enviromment virtuel avec la commande :  "source env/bin/activate".
+   - Activer l' enviromment virtuel avec la commande :  "source env/Scripts/activate".
    - Installer les packages necessaires avec la commande : " pip install -r requirements.txt"  
    - 
    ## Utilisation:
-   - Exécuter le programme.
+   - Exécuter le programme soit en tapant "py scraper.py" dans la console ou au travers d 'une éditeur de code.
    - Le programme crée un dossier "data" dans le repertoire courant, qui contient un dossier "csv" et dossier "image".
    - Les différentes données sont classées dans ces dossiers par catégorie.
   
